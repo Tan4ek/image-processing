@@ -1,0 +1,9 @@
+FROM python:3.6-slim-stretch
+
+WORKDIR /usr/src/app
+
+COPY ./ ./
+
+RUN pip install --no-cache-dir -r file_scaner/requirements.txt
+
+ENTRYPOINT ["python3", "main_file_scanner.py"]

@@ -1,0 +1,111 @@
+version: '3.2'
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    restart: on-failure
+    ports:
+      - "2181:2181"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.platform == amd64
+  kafka:
+    image: wurstmeister/kafka:2.12-2.3.0
+    container_name: kafka
+    restart: on-failure
+    ports:
+      - target: 9094
+        published: 9094
+        protocol: tcp
+        mode: host
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep 'Node Address:' | cut -d' ' -f 4"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://_{HOSTNAME_COMMAND}:9094
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:9094
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.platform == amd64
+    depends_on:
+      - zookeeper
+  mongo:
+    image: mongo:4.2.1
+    restart: always
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tan4ek
+      MONGO_INITDB_ROOT_PASSWORD: tan4ek
+
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.platform == amd64
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: mongodb-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: tan4ek
+      ME_CONFIG_MONGODB_ADMINPASSWORD: tan4ek
+
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.platform == amd64
+    depends_on:
+      - mongo
+
+  image_scaner_master:
+    image: tan4ek.nas.local:5000/image-recognition_master:latest
+    restart: always
+    container_name: image-recognition_master
+    volumes:
+      - /mnt/NAS-tan4ek/Public/:/mnt/NAS-tan4ek/Public/
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - kafka
+      - mongo
+
+  image_scaner_worker_amd64:
+    image: tan4ek.nas.local:5000/image-recognition_worker:amd64
+    restart: always
+    container_name: image-recognition_worker_amd64
+    volumes:
+      - /mnt/NAS-tan4ek/Public/:/mnt/NAS-tan4ek/Public/
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.platform == amd64]
+    depends_on:
+      - kafka
+
+  image_scaner_worker_arm:
+    image: tan4ek.nas.local:5000/image-recognition_worker:armhf
+    restart: always
+    container_name: image-recognition_worker_amd64
+    volumes:
+      - /mnt/NAS-tan4ek/Public/:/mnt/NAS-tan4ek/Public/
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.platform == armhf]
+    depends_on:
+      - kafka

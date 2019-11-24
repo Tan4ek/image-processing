@@ -1,0 +1,6 @@
+kafka-python==1.4.7
+face_recognition
+pymongo==3.9.0
+Pillow
+ImageHash==4.0
+schedule==0.6.0
