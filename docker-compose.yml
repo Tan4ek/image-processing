@@ -30,6 +30,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - kafka-volume:/kafka
     deploy:
       placement:
         constraints:
@@ -46,7 +47,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: tan4ek
       MONGO_INITDB_ROOT_PASSWORD: tan4ek
-
+    volumes:
+      - mongo-volume:/data/db
     deploy:
       placement:
         constraints:
@@ -109,3 +111,7 @@ services:
         constraints: [node.labels.platform == armhf]
     depends_on:
       - kafka
+
+volumes:
+  mongo-volume:
+  kafka-volume:
