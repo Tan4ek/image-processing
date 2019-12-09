@@ -1,18 +1,15 @@
 import logging
 import os
 import uuid
-from collections import namedtuple
 from datetime import datetime
 
 import face_recognition
 import numpy as np
 
+from util.message_processing import RecogniseObject
 from util.util import current_milli_time
 
-# coordinate = { 'top': 10, 'right': 20, 'bottom': 30, 'left': 40 }
-RecogniseObject = namedtuple('RecogniseObject', ['object_type', 'coordinate'])
-
-FACE_RECOGNISE_TYPE = 'FACE_RECOGNITION'
+FACE_RECOGNISE_TYPE = 'FACE_DETECTION'
 
 
 class AbstractRecogniser(object):
@@ -47,6 +44,7 @@ class FaceRecogniser(AbstractRecogniser):
         return FACE_RECOGNISE_TYPE
 
     def recognise(self, pil_image, file_path):
+        start_execution_datetime = str(datetime.utcnow())
         time_before_face_location = current_milli_time()
 
         # faces - (top, right, bottom, left)
@@ -72,7 +70,7 @@ class FaceRecogniser(AbstractRecogniser):
             'recognise_type': self.recognise_type(),
             'metadata': {
                 'execution_time_ms': time_after_face_location - time_before_face_location,
-                'start_execution_datetime': str(datetime.utcnow())
+                'start_execution_datetime': start_execution_datetime
             }
         }
         if self.crop_face:

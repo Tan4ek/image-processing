@@ -9,7 +9,7 @@ class TestFaceRecogniser(unittest.TestCase):
 
     def test_recognise(self):
         face_recogniser = FaceRecogniser()
-        self.assertEqual(face_recogniser.recognise_type(), 'FACE_RECOGNITION')
+        self.assertEqual(face_recogniser.recognise_type(), 'FACE_DETECTION')
         file_path = '../resources/FACE.jpg'
         with Image.open(file_path) as image:
             recognise = face_recogniser.recognise(image, file_path)

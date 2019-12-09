@@ -10,22 +10,11 @@ from kafka import OffsetAndMetadata
 from kafka import TopicPartition
 
 from image_recognition.recogniser import FaceRecogniser
+from util.message_processing import AbstractMessageProcessing
 from util.util import kafka_json_deserializer, kafka_json_serializer, get_hostname
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-
-
-class AbstractMessageProcessing(object):
-
-    def process_message(self, message_payload):
-        """
-         Обработка сообщения из очереди
-        :message_payload - тело сообщения
-        :rtype: None - если не было обработано, причина, например - файл не найден,
-                array [AbstractRecogniser.recognise return]
-        """
-        raise NotImplementedError
 
 
 class ImageRecogniseMessageProcessing(AbstractMessageProcessing):

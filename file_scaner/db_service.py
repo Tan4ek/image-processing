@@ -27,14 +27,14 @@ class DbImageService:
         query = {'_id': ObjectId(_id_str),
                  'path': path}
 
-        logging.info("Update image with '_id' %s. Process step: FACE_RECOGNITION", _id_str)
+        logging.info("Update image with '_id' %s. Process step: FACE_DETECTION", _id_str)
         self._image_collection.update_one(query,
                                           {"$set": {
                                               "recognised": recognised
                                           },
                                               "$push": {
                                                   "process_steps": {
-                                                      'name': 'FACE_RECOGNITION',
+                                                      'name': 'FACE_DETECTION',
                                                       'timestamp': crop_timestamp
                                                   }
                                               }}, upsert=False)
