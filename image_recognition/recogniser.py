@@ -80,11 +80,13 @@ class FaceRecogniser(AbstractRecogniser):
 
     def _crop_face(self, pil_image, file_name, extension, bottom, left, right, top):
         cropped = pil_image.crop((left, top, right, bottom))
-        face_image_path = "{}{}__{}{}".format(self.crop_face_location_path, file_name, str(uuid.uuid4()), extension)
+        crop_face_image_id = '{}__{}'.format(file_name, str(uuid.uuid4()))
+        face_image_path = self.crop_face_location_path + crop_face_image_id + extension
         cropped.save(face_image_path)
         logging.info('Saving crop image %s.', face_image_path)
         return {
             'face_image_path': face_image_path,
+            'crop_face_id': crop_face_image_id,
             'face_location': {
                 'top': top,
                 'right': right,
