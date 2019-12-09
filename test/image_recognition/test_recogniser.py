@@ -14,4 +14,4 @@ class TestFaceRecogniser(unittest.TestCase):
         with Image.open(file_path) as image:
             recognise = face_recogniser.recognise(image, file_path)
             self.assertEqual(len(recognise['recognise_objects']), 1)
-            self.assertEqual(len(recognise['metadata']), 1)
+            self.assertEqual(len(recognise['metadata']), 2)
