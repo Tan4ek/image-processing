@@ -8,7 +8,7 @@ class ImageProcessing(unittest.TestCase):
     def test_image_recognise_message_processing(self):
         image_recognise_message_processing = ImageRecogniseMessageProcessing(crop_image=False)
         message_payload = {
-            'path': '../resources/FACE.jpg',
+            'path': 'test/resources/FACE.jpg',
             'file': 'FACE.jpg',
             'simple_hash': 'aaaa',
             'a_hash': 'bbb',

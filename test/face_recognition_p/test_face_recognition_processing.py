@@ -8,8 +8,8 @@ class FaceProcessing(unittest.TestCase):
 
     def test_face_recognition(self):
         image_recognition_message_processing = FaceRecognitionMessageProcessing(
-            etalon_faces_path='../resources/etalon_paths')
-        dmitri_faces_path = '../resources/dmitri_faces'
+            etalon_faces_path='test/resources/etalon_paths')
+        dmitri_faces_path = 'test/resources/dmitri_faces'
         db_id = '1'
         for file_name in os.listdir(dmitri_faces_path):
             abs_image_path = os.path.join(dmitri_faces_path, file_name)
