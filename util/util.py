@@ -10,26 +10,30 @@ class NamedtupleEncoder(json.JSONEncoder):
         return isinstance(obj, tuple) and hasattr(obj, '_asdict')
 
     @staticmethod
-    def _replace_namedtuple_recursive_clone(obj_dict):
-        keys = list(obj_dict.keys())
-        clone_obj = {}
-        for key in keys:
-            value = obj_dict[key]
-            if NamedtupleEncoder.is_namedtuple(value):
-                value = value._asdict()
-            if isinstance(value, dict):
+    def _replace_namedtuple_recursive_clone(obj):
+        if isinstance(obj, dict):
+            keys = list(obj.keys())
+            clone_obj = {}
+            for key in keys:
+                value = obj[key]
+                if NamedtupleEncoder.is_namedtuple(value):
+                    value = value._asdict()
                 value = NamedtupleEncoder._replace_namedtuple_recursive_clone(value)
-            clone_obj[key] = value
-        return clone_obj
+                clone_obj[key] = value
+            return clone_obj
+        if isinstance(obj, list):
+            clone_list = []
+            for original_element in obj:
+                clone_element = NamedtupleEncoder._replace_namedtuple_recursive_clone(original_element)
+                clone_list.append(clone_element)
+            return clone_list
+        if NamedtupleEncoder.is_namedtuple(obj):
+            return NamedtupleEncoder._replace_namedtuple_recursive_clone(obj._asdict())
+        return obj
 
     def encode(self, obj):
-        if isinstance(obj, dict):
-            fixed_clone_obj = NamedtupleEncoder._replace_namedtuple_recursive_clone(obj)
-            return super(NamedtupleEncoder, self).encode(fixed_clone_obj)
-
-        if isinstance(obj, tuple) and hasattr(obj, '_asdict'):
-            return super().encode(obj._asdict())
-        return super(NamedtupleEncoder, self).encode(obj)
+        fixed_clone_obj = NamedtupleEncoder._replace_namedtuple_recursive_clone(obj)
+        return super(NamedtupleEncoder, self).encode(fixed_clone_obj)
 
 
 def kafka_json_serializer(v):
