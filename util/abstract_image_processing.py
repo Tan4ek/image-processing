@@ -9,14 +9,11 @@ from util.util import get_hostname, kafka_json_deserializer, kafka_json_serializ
 
 class ImageProcessing(object):
 
-    def __init__(self, kafka_host, kafka_image_recognise_topic, kafka_image_recognise_result_topic,
-                 kafka_response_topic,
-                 message_processing):
+    def __init__(self, kafka_host, kafka_consumer_topic, kafka_response_topic, message_processing):
         kafka_consumer_group = "face_recognise_{}".format(get_hostname())
-        self.kafka_image_recognise_topic = kafka_image_recognise_topic
-        self.kafka_image_recognise_result_topic = kafka_image_recognise_result_topic
+        self.kafka_consumer_topic = kafka_consumer_topic
         self.kafka_response_topic = kafka_response_topic
-        self.consumer = KafkaConsumer(kafka_image_recognise_topic, bootstrap_servers=[kafka_host],
+        self.consumer = KafkaConsumer(kafka_consumer_topic, bootstrap_servers=[kafka_host],
                                       auto_offset_reset='earliest',
                                       enable_auto_commit=False, group_id=kafka_consumer_group,
                                       value_deserializer=kafka_json_deserializer, max_poll_records=1,
@@ -39,7 +36,7 @@ class ImageProcessing(object):
         for msg in self.consumer:
             logging.info(msg)
             value = msg.value
-            topic_partition = TopicPartition(self.kafka_image_recognise_topic, msg.partition)
+            topic_partition = TopicPartition(self.kafka_consumer_topic, msg.partition)
             offset = OffsetAndMetadata(msg.offset, '')
 
             message_id = value['message_id']
