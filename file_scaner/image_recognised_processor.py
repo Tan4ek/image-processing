@@ -47,7 +47,8 @@ class RecognisedProcessor(Process):
                             'crop_face_id': c['crop_face_id'],
                             'face_location': c['face_location'],
                             'face_recognised': False,
-                            'face_recognised_in_queue': False
+                            'face_recognised_in_queue': False,
+                            'recognised': None
                         })
 
                 for c in cropped_faces:

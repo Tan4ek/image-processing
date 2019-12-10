@@ -29,13 +29,24 @@ class DbImageService:
         return self._image_collection.find_one({'path': path, 'simple_hash': simple_hash})
 
     def find_crop_face_not_in_queue(self, limit=50):
-        return self._crop_face_image_collection.find({'face_recognised_in_queue': False}, limit=limit)
+        return self._crop_face_image_collection.find({'face_recognised_in_queue': False,
+                                                      'face_recognised': False}, limit=limit)
 
     def update_crop_face_in_queue(self, _id_str, in_queue=True):
         self._crop_face_image_collection.update_one({'_id': ObjectId(_id_str)},
                                                     {"$set": {
                                                         'face_recognised_in_queue': in_queue
                                                     }}, upsert=False)
+
+    def update_crop_face_recognise(self, _id_str, recognised):
+        self._crop_face_image_collection.update_one({'_id': ObjectId(_id_str)},
+                                                    {
+                                                        "$set": {
+                                                            'face_recognised_in_queue': False,
+                                                            'face_recognised': True,
+                                                            'recognised': recognised
+                                                        }
+                                                    }, upsert=False)
 
     def update_image_faces_process_step(self, _id_str, path, recognised, crop_timestamp):
         query = {'_id': ObjectId(_id_str),
@@ -57,3 +68,6 @@ class DbImageService:
         query = {'_id': ObjectId(_id_str),
                  'path': path}
         return self._image_collection.find_one(query)
+
+    def find_crop_face_by_id(self, _id_str):
+        return self._crop_face_image_collection.find_one({'_id': ObjectId(_id_str)})
