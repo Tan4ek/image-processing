@@ -37,6 +37,22 @@ class RecognisedProcessor(Process):
                                                                  message_payload['original_path'],
                                                                  recognised_objects,
                                                                  message_payload['timestamp'])
+
+                cropped_faces = []
+                for r in recognised_objects:
+                    for c in r['cropped_faces']:
+                        cropped_faces.append({
+                            'image_id': image_document['_id'],
+                            'crop_face_image_path': c['face_image_path'],
+                            'crop_face_id': c['crop_face_id'],
+                            'face_location': c['face_location'],
+                            'face_recognised': False,
+                            'face_recognised_in_queue': False
+                        })
+
+                for c in cropped_faces:
+                    db_image_service.insert_crop_face_image(c)
+
             else:
                 logging.warning("Can't find image by %s", str({'_id': ObjectId(message_payload['db_id']),
                                                                'path': message_payload['original_path']}))

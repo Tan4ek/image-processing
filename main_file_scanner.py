@@ -1,6 +1,7 @@
 import configparser
 
 from file_scaner.file_scanner_processor import FileScannerProcessor
+from file_scaner.image_face_recognise_scanner_processor import CropFaceRecogniseScannerProcessor
 from file_scaner.image_recognised_processor import RecognisedProcessor
 
 if __name__ == '__main__':
@@ -18,8 +19,15 @@ if __name__ == '__main__':
                                                   ignore_path_for_scanning=config['main']['IgnorePathForScanning'],
                                                   kafka_host=config['kafka']['Host'],
                                                   kafka_image_topic=config['kafka']['ImageRecogniseTopic'])
+    crop_face_scanner_processor = CropFaceRecogniseScannerProcessor(db_uri=config['mongo']['Uri'],
+                                                                    db_image_name=config['mongo']['ImageDb'],
+                                                                    kafka_host=config['kafka']['Host'],
+                                                                    kafka_face_recognise_topic=config['kafka'][
+                                                                        'ImageFaceRecogniseTopic'])
     recognised_processor.start()
     file_scanner_processor.start()
+    crop_face_scanner_processor.start()
 
     recognised_processor.join()
     file_scanner_processor.join()
+    crop_face_scanner_processor.join()
