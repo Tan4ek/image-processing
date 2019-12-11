@@ -32,7 +32,7 @@ class CropFaceRecognisedProcessor(Process):
             crop_face_image_document = db_image_service.find_crop_face_by_id(crop_face_image_id)
 
             if crop_face_image_document:
-                recognised_faces = crop_face_image_document['recognised_faces']
+                recognised_faces = message_payload['recognised_faces']
                 db_image_service.update_crop_face_recognise(crop_face_image_id, recognised_faces)
             else:
                 logging.warning("Can't find crop face image by %s", str({'_id': ObjectId(message_payload['db_id'])}))
