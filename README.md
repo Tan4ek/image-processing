@@ -42,6 +42,9 @@ docker push tan4ek.nas.local:5000/image-recognition_master:latest
 
 docker build -f Dockerfile -t tan4ek.nas.local:5000/image-recognition_worker:amd64 .
 docker push tan4ek.nas.local:5000/image-recognition_worker:amd64
+
+docker build -f Dockerfile -t tan4ek.nas.local:5000/image-recognition_face_worker:amd64 .
+docker push tan4ek.nas.local:5000/image-recognition_face_worker:amd64
 ```
 
 ## Запуск и остановка docker stack

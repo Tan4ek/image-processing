@@ -1,0 +1,9 @@
+FROM tan4ek.nas.local:5000/face_recognition:amd64
+
+WORKDIR /usr/src/app
+
+COPY ./ ./
+
+RUN pip install --no-cache-dir -r image_recognition/requirements.txt
+
+ENTRYPOINT ["python3", "main_face_recognition.py"]
