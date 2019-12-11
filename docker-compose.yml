@@ -99,6 +99,19 @@ services:
     depends_on:
       - kafka
 
+  image_scaner_worker_face_amd64:
+    image: tan4ek.nas.local:5000/image-recognition_face_worker:amd64
+    restart: always
+    container_name: image-recognition_worker_amd64
+    volumes:
+      - /mnt/NAS-tan4ek/Public/:/mnt/NAS-tan4ek/Public/
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.platform == amd64]
+    depends_on:
+      - kafka
+
   image_scaner_worker_arm:
     image: tan4ek.nas.local:5000/image-recognition_worker:armhf
     restart: always
