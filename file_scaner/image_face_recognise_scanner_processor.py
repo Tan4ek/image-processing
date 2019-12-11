@@ -2,26 +2,26 @@ import logging
 import os
 import time
 import uuid
-from multiprocessing import Process
 
 from kafka import KafkaProducer
 
+from file_scaner.abstract_process import AbstractProcess
 from file_scaner.db_service import DbImageService
 from util.util import kafka_json_serializer, get_hostname
 
 __DELAY_BETWEEN_CROP_FACE_SCANNING__ = 5 * 60
 
 
-class CropFaceRecogniseScannerProcessor(Process):
+class CropFaceRecogniseScannerProcessor(AbstractProcess):
 
     def __init__(self, db_uri, db_image_name, kafka_host, kafka_face_recognise_topic):
-        super().__init__()
+        super().__init__('CropFaceRecogniseScannerProcessor')
         self.kafka_host = kafka_host
         self.db_uri = db_uri
         self.db_image_name = db_image_name
         self.kafka_face_recognise_topic = kafka_face_recognise_topic
 
-    def run(self):
+    def _run(self):
         producer = KafkaProducer(bootstrap_servers=self.kafka_host, value_serializer=kafka_json_serializer)
 
         db_image_service = DbImageService(db_uri=self.db_uri, db_image_name=self.db_image_name)

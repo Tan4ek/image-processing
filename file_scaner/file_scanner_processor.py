@@ -2,11 +2,11 @@ import logging
 import time
 import uuid
 from datetime import datetime
-from multiprocessing import Process
 
 from PIL import Image
 from kafka import KafkaProducer
 
+from file_scaner.abstract_process import AbstractProcess
 from file_scaner.db_service import DbImageService
 from file_scaner.file_scanner import FileScanner
 from util.image import get_image_exif, get_image_dimention, get_image_size_bytes, get_average_image_hash, \
@@ -16,10 +16,11 @@ from util.util import kafka_json_serializer, current_milli_time
 __DELAY_BETWEEN_FILE_SCANNING__ = 10 * 60
 
 
-class FileScannerProcessor(Process):
+class FileScannerProcessor(AbstractProcess):
+
     def __init__(self, db_uri, db_image_name, root_path_for_scanning, ignore_path_for_scanning, kafka_host,
                  kafka_image_topic):
-        super().__init__()
+        super().__init__('FileScannerProcessor')
         self.db_uri = db_uri
         self.db_image_name = db_image_name
 
@@ -101,7 +102,7 @@ class FileScannerProcessor(Process):
                 logging.warning("Can't iterate over file %s. Error: %s", file_path, e)
                 # raise e
 
-    def run(self):
+    def _run(self):
         self._producer = KafkaProducer(bootstrap_servers=self.kafka_host, value_serializer=kafka_json_serializer)
 
         self._db_image_service = DbImageService(db_uri=self.db_uri, db_image_name=self.db_image_name)

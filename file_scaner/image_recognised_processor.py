@@ -1,17 +1,17 @@
 import logging
-from multiprocessing import Process
 
 from bson.objectid import ObjectId
 from kafka import KafkaConsumer, TopicPartition, OffsetAndMetadata
 
+from file_scaner.abstract_process import AbstractProcess
 from file_scaner.db_service import DbImageService
 from util.util import kafka_json_deserializer
 
 
-class RecognisedProcessor(Process):
+class RecognisedProcessor(AbstractProcess):
 
     def __init__(self, db_uri, db_image_name, kafka_host, kafka_image_recognised_result_topic):
-        super().__init__()
+        super().__init__('RecognisedProcessor')
         self.kafka_image_recognised_result_topic = kafka_image_recognised_result_topic
         self.db_uri = db_uri
         self.db_image_name = db_image_name
@@ -19,7 +19,7 @@ class RecognisedProcessor(Process):
         self.kafka_host = kafka_host
         logging.info('Initialise %s process completed', self.__class__.__name__)
 
-    def run(self):
+    def _run(self):
         consumer = KafkaConsumer(self.kafka_image_recognised_result_topic,
                                  bootstrap_servers=[self.kafka_host], auto_offset_reset='earliest',
                                  enable_auto_commit=False, group_id='recognised_faces',
